@@ -1,0 +1,1630 @@
+rm(list=ls(all=TRUE))
+#install.packages("stringr") # I HAVE ALREADY DONE THIS
+#install.packages("multilevel") # I HAVE ALREADY DONE THIS
+#install.packages("tidyr")
+getwd()
+setwd("/Users/sandeepmoparthy/Downloads/MIS 699")
+data <- read.csv("csm subforums all posts cleaned.csv", stringsAsFactors = FALSE, header = TRUE)
+
+main<- read.csv("csm subforums all posts cleaned.csv", stringsAsFactors = FALSE, header = TRUE)
+
+library(stringr)
+library(multilevel)
+
+replace_all <- function(df, pattern, replacement) {
+  char <- vapply(df, function(x) is.factor(x) || is.character(x), logical(1))
+  df[char] <- lapply(df[char], str_replace_all, pattern, replacement)  
+  df
+}
+
+data <- replace_all(data, ",", ".")
+
+wc <- data$WC
+data <- data[,12:ncol(data)]
+data <- as.data.frame(sapply(data, as.numeric))
+data <- cbind(wc, data)
+
+
+X_data = subset(data, select = -c(posemo))
+
+Y_data =  subset(data, select = c(posemo))
+
+
+
+risk<- lm(risk~negemo+anger+negemo*anger, data = data)
+summary(risk)
+
+data$negemoXanger <- data$negemo*data$anger
+
+
+
+##### may remove risk altogether
+risklm<- lm(risk~negemo+anger+negemoXanger, data = data)
+summary(risklm)
+
+social<- lm(social~affiliation+risklm, data = data)
+social<- lm(social~affiliation+(3.020e-01*negemo)+(-2.733e-01*anger)+(-5.944e-04*negemoXanger), data = data)
+summary(social)
+
+affiliation<- lm(affiliation~friend, data = data)
+summary(affiliation)
+
+
+focuspast<- lm(focuspast~reward+social,data=data)
+summary(focuspast)
+
+
+power<- lm(power~achieve+focuspresent+informal+focuspast*achieve, data = data)
+summary(power)
+
+drives<- lm(drives~ reward+power+reward*power, data = data)
+summary(drives)
+
+posemo<- lm(posemo~drives+focuspast, data = data) 
+summary(posemo)
+
+
+
+
+data$drives
+
+
+lo<- lm(posemo~friend+focuspast+focuspast+negemo+wc+Tone+drives, data = data)
+summary(lo)
+
+
+Tone<- lm(Tone~anger+death, data = data)
+summary(Tone)
+
+
+
+Drive<- lm(drives~reward+affiliation+reward*affiliation, data = data)
+summary(Drive)
+
+
+c<-cor(data)
+
+
+
+alliliation_sa<- lm(affiliation~reward+power, data = data)
+summary(alliliation_sa)
+
+
+
+
+
+
+sink('order_01.txt', append=TRUE)
+sobel(data$Tone, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$adj, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$affect, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$family, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$social, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$anx, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$sad, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$friend, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$health, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$body, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$bio, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$hear, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$feel, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$drives, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$power, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$reward, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$risk, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$work, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$time, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$swear, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$home, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$money, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$relig, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$informal, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$death, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$assent, data$posemo)$Indirect.Effect
+sobel(data$Tone, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$adj, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$affect, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$family, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$social, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$sad, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$anx, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$friend, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$health, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$body, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$bio, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$hear, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$feel, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$drives, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$power, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$reward, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$risk, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$work, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$time, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$swear, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$home, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$money, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$relig, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$informal, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$death, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$assent, data$posemo)$Indirect.Effect
+sobel(data$Analytic, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$adj, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$affect, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$family, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$social, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$sad, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$anx, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$friend, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$health, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$body, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$bio, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$hear, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$feel, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$drives, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$power, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$reward, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$risk, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$work, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$time, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$swear, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$home, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$money, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$relig, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$informal, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$death, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$assent, data$posemo)$Indirect.Effect
+sobel(data$Clout, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$adj, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$affect, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$family, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$social, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$sad, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$anx, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$friend, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$health, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$body, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$bio, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$hear, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$feel, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$drives, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$power, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$reward, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$risk, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$work, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$time, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$swear, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$home, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$money, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$relig, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$informal, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$death, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$assent, data$posemo)$Indirect.Effect
+sobel(data$Authentic, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$adj, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$affect, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$family, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$social, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$sad, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$anx, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$friend, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$health, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$body, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$bio, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$hear, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$feel, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$drives, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$power, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$reward, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$risk, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$work, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$time, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$swear, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$home, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$money, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$relig, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$informal, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$death, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$assent, data$posemo)$Indirect.Effect
+sobel(data$adverb, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$affect, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$affect, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$affect, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$affect, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$affect, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$affect, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$affect, data$adj, data$posemo)$Indirect.Effect
+sobel(data$affect, data$family, data$posemo)$Indirect.Effect
+sobel(data$affect, data$social, data$posemo)$Indirect.Effect
+sobel(data$affect, data$sad, data$posemo)$Indirect.Effect
+sobel(data$affect, data$anx, data$posemo)$Indirect.Effect
+sobel(data$affect, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$affect, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$affect, data$friend, data$posemo)$Indirect.Effect
+sobel(data$affect, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$affect, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$affect, data$health, data$posemo)$Indirect.Effect
+sobel(data$affect, data$body, data$posemo)$Indirect.Effect
+sobel(data$affect, data$bio, data$posemo)$Indirect.Effect
+sobel(data$affect, data$hear, data$posemo)$Indirect.Effect
+sobel(data$affect, data$feel, data$posemo)$Indirect.Effect
+sobel(data$affect, data$drives, data$posemo)$Indirect.Effect
+sobel(data$affect, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$affect, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$affect, data$power, data$posemo)$Indirect.Effect
+sobel(data$affect, data$reward, data$posemo)$Indirect.Effect
+sobel(data$affect, data$risk, data$posemo)$Indirect.Effect
+sobel(data$affect, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$affect, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$affect, data$work, data$posemo)$Indirect.Effect
+sobel(data$affect, data$time, data$posemo)$Indirect.Effect
+sobel(data$affect, data$swear, data$posemo)$Indirect.Effect
+sobel(data$affect, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$affect, data$home, data$posemo)$Indirect.Effect
+sobel(data$affect, data$money, data$posemo)$Indirect.Effect
+sobel(data$affect, data$relig, data$posemo)$Indirect.Effect
+sobel(data$affect, data$informal, data$posemo)$Indirect.Effect
+sobel(data$affect, data$death, data$posemo)$Indirect.Effect
+sobel(data$affect, data$assent, data$posemo)$Indirect.Effect
+sobel(data$affect, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$family, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$family, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$family, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$family, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$family, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$family, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$family, data$adj, data$posemo)$Indirect.Effect
+sobel(data$family, data$affect, data$posemo)$Indirect.Effect
+sobel(data$family, data$social, data$posemo)$Indirect.Effect
+sobel(data$family, data$sad, data$posemo)$Indirect.Effect
+sobel(data$family, data$anx, data$posemo)$Indirect.Effect
+sobel(data$family, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$family, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$family, data$friend, data$posemo)$Indirect.Effect
+sobel(data$family, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$family, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$family, data$health, data$posemo)$Indirect.Effect
+sobel(data$family, data$body, data$posemo)$Indirect.Effect
+sobel(data$family, data$bio, data$posemo)$Indirect.Effect
+sobel(data$family, data$hear, data$posemo)$Indirect.Effect
+sobel(data$family, data$feel, data$posemo)$Indirect.Effect
+sobel(data$family, data$drives, data$posemo)$Indirect.Effect
+sobel(data$family, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$family, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$family, data$power, data$posemo)$Indirect.Effect
+sobel(data$family, data$reward, data$posemo)$Indirect.Effect
+sobel(data$family, data$risk, data$posemo)$Indirect.Effect
+sobel(data$family, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$family, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$family, data$work, data$posemo)$Indirect.Effect
+sobel(data$family, data$time, data$posemo)$Indirect.Effect
+sobel(data$family, data$swear, data$posemo)$Indirect.Effect
+sobel(data$family, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$family, data$home, data$posemo)$Indirect.Effect
+sobel(data$family, data$money, data$posemo)$Indirect.Effect
+sobel(data$family, data$relig, data$posemo)$Indirect.Effect
+sobel(data$family, data$informal, data$posemo)$Indirect.Effect
+sobel(data$family, data$death, data$posemo)$Indirect.Effect
+sobel(data$family, data$assent, data$posemo)$Indirect.Effect
+sobel(data$family, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$social, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$social, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$social, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$social, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$social, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$social, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$social, data$adj, data$posemo)$Indirect.Effect
+sobel(data$social, data$affect, data$posemo)$Indirect.Effect
+sobel(data$social, data$family, data$posemo)$Indirect.Effect
+sobel(data$social, data$sad, data$posemo)$Indirect.Effect
+sobel(data$social, data$anx, data$posemo)$Indirect.Effect
+sobel(data$social, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$social, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$social, data$friend, data$posemo)$Indirect.Effect
+sobel(data$social, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$social, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$social, data$health, data$posemo)$Indirect.Effect
+sobel(data$social, data$body, data$posemo)$Indirect.Effect
+sobel(data$social, data$bio, data$posemo)$Indirect.Effect
+sobel(data$social, data$hear, data$posemo)$Indirect.Effect
+sobel(data$social, data$feel, data$posemo)$Indirect.Effect
+sobel(data$social, data$drives, data$posemo)$Indirect.Effect
+sobel(data$social, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$social, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$social, data$power, data$posemo)$Indirect.Effect
+sobel(data$social, data$reward, data$posemo)$Indirect.Effect
+sobel(data$social, data$risk, data$posemo)$Indirect.Effect
+sobel(data$social, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$social, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$social, data$work, data$posemo)$Indirect.Effect
+sobel(data$social, data$time, data$posemo)$Indirect.Effect
+sobel(data$social, data$swear, data$posemo)$Indirect.Effect
+sobel(data$social, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$social, data$home, data$posemo)$Indirect.Effect
+sobel(data$social, data$money, data$posemo)$Indirect.Effect
+sobel(data$social, data$relig, data$posemo)$Indirect.Effect
+sobel(data$social, data$informal, data$posemo)$Indirect.Effect
+sobel(data$social, data$death, data$posemo)$Indirect.Effect
+sobel(data$social, data$assent, data$posemo)$Indirect.Effect
+sobel(data$social, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$sad, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$sad, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$sad, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$sad, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$sad, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$sad, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$sad, data$adj, data$posemo)$Indirect.Effect
+sobel(data$sad, data$affect, data$posemo)$Indirect.Effect
+sobel(data$sad, data$family, data$posemo)$Indirect.Effect
+sobel(data$sad, data$social, data$posemo)$Indirect.Effect
+sobel(data$sad, data$anx, data$posemo)$Indirect.Effect
+sobel(data$sad, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$sad, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$sad, data$friend, data$posemo)$Indirect.Effect
+sobel(data$sad, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$sad, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$sad, data$health, data$posemo)$Indirect.Effect
+sobel(data$sad, data$body, data$posemo)$Indirect.Effect
+sobel(data$sad, data$bio, data$posemo)$Indirect.Effect
+sobel(data$sad, data$hear, data$posemo)$Indirect.Effect
+sobel(data$sad, data$feel, data$posemo)$Indirect.Effect
+sobel(data$sad, data$drives, data$posemo)$Indirect.Effect
+sobel(data$sad, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$sad, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$sad, data$power, data$posemo)$Indirect.Effect
+sobel(data$sad, data$reward, data$posemo)$Indirect.Effect
+sobel(data$sad, data$risk, data$posemo)$Indirect.Effect
+sobel(data$sad, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$sad, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$sad, data$work, data$posemo)$Indirect.Effect
+sobel(data$sad, data$time, data$posemo)$Indirect.Effect
+sobel(data$sad, data$swear, data$posemo)$Indirect.Effect
+sobel(data$sad, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$sad, data$home, data$posemo)$Indirect.Effect
+sobel(data$sad, data$money, data$posemo)$Indirect.Effect
+sobel(data$sad, data$relig, data$posemo)$Indirect.Effect
+sobel(data$sad, data$informal, data$posemo)$Indirect.Effect
+sobel(data$sad, data$death, data$posemo)$Indirect.Effect
+sobel(data$sad, data$assent, data$posemo)$Indirect.Effect
+sobel(data$sad, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$anx, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$anx, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$anx, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$anx, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$anx, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$anx, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$anx, data$adj, data$posemo)$Indirect.Effect
+sobel(data$anx, data$affect, data$posemo)$Indirect.Effect
+sobel(data$anx, data$family, data$posemo)$Indirect.Effect
+sobel(data$anx, data$social, data$posemo)$Indirect.Effect
+sobel(data$anx, data$sad, data$posemo)$Indirect.Effect
+sobel(data$anx, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$anx, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$anx, data$friend, data$posemo)$Indirect.Effect
+sobel(data$anx, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$anx, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$anx, data$health, data$posemo)$Indirect.Effect
+sobel(data$anx, data$body, data$posemo)$Indirect.Effect
+sobel(data$anx, data$bio, data$posemo)$Indirect.Effect
+sobel(data$anx, data$hear, data$posemo)$Indirect.Effect
+sobel(data$anx, data$feel, data$posemo)$Indirect.Effect
+sobel(data$anx, data$drives, data$posemo)$Indirect.Effect
+sobel(data$anx, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$anx, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$anx, data$power, data$posemo)$Indirect.Effect
+sobel(data$anx, data$reward, data$posemo)$Indirect.Effect
+sobel(data$anx, data$risk, data$posemo)$Indirect.Effect
+sobel(data$anx, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$anx, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$anx, data$work, data$posemo)$Indirect.Effect
+sobel(data$anx, data$time, data$posemo)$Indirect.Effect
+sobel(data$anx, data$swear, data$posemo)$Indirect.Effect
+sobel(data$anx, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$anx, data$home, data$posemo)$Indirect.Effect
+sobel(data$anx, data$money, data$posemo)$Indirect.Effect
+sobel(data$anx, data$relig, data$posemo)$Indirect.Effect
+sobel(data$anx, data$informal, data$posemo)$Indirect.Effect
+sobel(data$anx, data$death, data$posemo)$Indirect.Effect
+sobel(data$anx, data$assent, data$posemo)$Indirect.Effect
+sobel(data$anx, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$adj, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$affect, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$family, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$social, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$sad, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$anx, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$friend, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$health, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$body, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$bio, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$hear, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$feel, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$drives, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$power, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$reward, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$risk, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$work, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$time, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$swear, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$home, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$money, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$relig, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$informal, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$death, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$assent, data$posemo)$Indirect.Effect
+sobel(data$negemo, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$anger, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$anger, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$anger, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$anger, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$anger, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$anger, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$anger, data$adj, data$posemo)$Indirect.Effect
+sobel(data$anger, data$affect, data$posemo)$Indirect.Effect
+sobel(data$anger, data$family, data$posemo)$Indirect.Effect
+sobel(data$anger, data$social, data$posemo)$Indirect.Effect
+sobel(data$anger, data$sad, data$posemo)$Indirect.Effect
+sobel(data$anger, data$anx, data$posemo)$Indirect.Effect
+sobel(data$anger, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$anger, data$friend, data$posemo)$Indirect.Effect
+sobel(data$anger, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$anger, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$anger, data$health, data$posemo)$Indirect.Effect
+sobel(data$anger, data$body, data$posemo)$Indirect.Effect
+sobel(data$anger, data$bio, data$posemo)$Indirect.Effect
+sobel(data$anger, data$hear, data$posemo)$Indirect.Effect
+sobel(data$anger, data$feel, data$posemo)$Indirect.Effect
+sobel(data$anger, data$drives, data$posemo)$Indirect.Effect
+sobel(data$anger, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$anger, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$anger, data$power, data$posemo)$Indirect.Effect
+sobel(data$anger, data$reward, data$posemo)$Indirect.Effect
+sobel(data$anger, data$risk, data$posemo)$Indirect.Effect
+sobel(data$anger, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$anger, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$anger, data$work, data$posemo)$Indirect.Effect
+sobel(data$anger, data$time, data$posemo)$Indirect.Effect
+sobel(data$anger, data$swear, data$posemo)$Indirect.Effect
+sobel(data$anger, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$anger, data$home, data$posemo)$Indirect.Effect
+sobel(data$anger, data$money, data$posemo)$Indirect.Effect
+sobel(data$anger, data$relig, data$posemo)$Indirect.Effect
+sobel(data$anger, data$informal, data$posemo)$Indirect.Effect
+sobel(data$anger, data$death, data$posemo)$Indirect.Effect
+sobel(data$anger, data$assent, data$posemo)$Indirect.Effect
+sobel(data$anger, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$friend, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$friend, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$friend, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$friend, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$friend, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$friend, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$friend, data$adj, data$posemo)$Indirect.Effect
+sobel(data$friend, data$affect, data$posemo)$Indirect.Effect
+sobel(data$friend, data$family, data$posemo)$Indirect.Effect
+sobel(data$friend, data$social, data$posemo)$Indirect.Effect
+sobel(data$friend, data$sad, data$posemo)$Indirect.Effect
+sobel(data$friend, data$anx, data$posemo)$Indirect.Effect
+sobel(data$friend, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$friend, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$friend, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$friend, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$friend, data$health, data$posemo)$Indirect.Effect
+sobel(data$friend, data$body, data$posemo)$Indirect.Effect
+sobel(data$friend, data$bio, data$posemo)$Indirect.Effect
+sobel(data$friend, data$hear, data$posemo)$Indirect.Effect
+sobel(data$friend, data$feel, data$posemo)$Indirect.Effect
+sobel(data$friend, data$drives, data$posemo)$Indirect.Effect
+sobel(data$friend, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$friend, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$friend, data$power, data$posemo)$Indirect.Effect
+sobel(data$friend, data$reward, data$posemo)$Indirect.Effect
+sobel(data$friend, data$risk, data$posemo)$Indirect.Effect
+sobel(data$friend, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$friend, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$friend, data$work, data$posemo)$Indirect.Effect
+sobel(data$friend, data$time, data$posemo)$Indirect.Effect
+sobel(data$friend, data$swear, data$posemo)$Indirect.Effect
+sobel(data$friend, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$friend, data$home, data$posemo)$Indirect.Effect
+sobel(data$friend, data$money, data$posemo)$Indirect.Effect
+sobel(data$friend, data$relig, data$posemo)$Indirect.Effect
+sobel(data$friend, data$informal, data$posemo)$Indirect.Effect
+sobel(data$friend, data$death, data$posemo)$Indirect.Effect
+sobel(data$friend, data$assent, data$posemo)$Indirect.Effect
+sobel(data$friend, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$adj, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$affect, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$family, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$social, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$sad, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$anx, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$friend, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$health, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$body, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$bio, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$hear, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$feel, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$drives, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$power, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$reward, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$risk, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$work, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$time, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$swear, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$home, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$money, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$relig, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$informal, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$death, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$assent, data$posemo)$Indirect.Effect
+sobel(data$discrep, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$adj, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$affect, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$family, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$social, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$sad, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$anx, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$friend, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$health, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$body, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$bio, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$hear, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$feel, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$drives, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$power, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$reward, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$risk, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$work, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$time, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$swear, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$home, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$money, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$relig, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$informal, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$death, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$assent, data$posemo)$Indirect.Effect
+sobel(data$sexual, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$health, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$health, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$health, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$health, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$health, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$health, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$health, data$adj, data$posemo)$Indirect.Effect
+sobel(data$health, data$affect, data$posemo)$Indirect.Effect
+sobel(data$health, data$family, data$posemo)$Indirect.Effect
+sobel(data$health, data$social, data$posemo)$Indirect.Effect
+sobel(data$health, data$sad, data$posemo)$Indirect.Effect
+sobel(data$health, data$anx, data$posemo)$Indirect.Effect
+sobel(data$health, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$health, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$health, data$friend, data$posemo)$Indirect.Effect
+sobel(data$health, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$health, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$health, data$body, data$posemo)$Indirect.Effect
+sobel(data$health, data$bio, data$posemo)$Indirect.Effect
+sobel(data$health, data$hear, data$posemo)$Indirect.Effect
+sobel(data$health, data$feel, data$posemo)$Indirect.Effect
+sobel(data$health, data$drives, data$posemo)$Indirect.Effect
+sobel(data$health, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$health, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$health, data$power, data$posemo)$Indirect.Effect
+sobel(data$health, data$reward, data$posemo)$Indirect.Effect
+sobel(data$health, data$risk, data$posemo)$Indirect.Effect
+sobel(data$health, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$health, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$health, data$work, data$posemo)$Indirect.Effect
+sobel(data$health, data$time, data$posemo)$Indirect.Effect
+sobel(data$health, data$swear, data$posemo)$Indirect.Effect
+sobel(data$health, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$health, data$home, data$posemo)$Indirect.Effect
+sobel(data$health, data$money, data$posemo)$Indirect.Effect
+sobel(data$health, data$relig, data$posemo)$Indirect.Effect
+sobel(data$health, data$informal, data$posemo)$Indirect.Effect
+sobel(data$health, data$death, data$posemo)$Indirect.Effect
+sobel(data$health, data$assent, data$posemo)$Indirect.Effect
+sobel(data$health, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$body, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$body, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$body, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$body, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$body, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$body, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$body, data$adj, data$posemo)$Indirect.Effect
+sobel(data$body, data$affect, data$posemo)$Indirect.Effect
+sobel(data$body, data$family, data$posemo)$Indirect.Effect
+sobel(data$body, data$social, data$posemo)$Indirect.Effect
+sobel(data$body, data$sad, data$posemo)$Indirect.Effect
+sobel(data$body, data$anx, data$posemo)$Indirect.Effect
+sobel(data$body, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$body, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$body, data$friend, data$posemo)$Indirect.Effect
+sobel(data$body, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$body, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$body, data$health, data$posemo)$Indirect.Effect
+sobel(data$body, data$bio, data$posemo)$Indirect.Effect
+sobel(data$body, data$hear, data$posemo)$Indirect.Effect
+sobel(data$body, data$feel, data$posemo)$Indirect.Effect
+sobel(data$body, data$drives, data$posemo)$Indirect.Effect
+sobel(data$body, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$body, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$body, data$power, data$posemo)$Indirect.Effect
+sobel(data$body, data$reward, data$posemo)$Indirect.Effect
+sobel(data$body, data$risk, data$posemo)$Indirect.Effect
+sobel(data$body, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$body, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$body, data$work, data$posemo)$Indirect.Effect
+sobel(data$body, data$time, data$posemo)$Indirect.Effect
+sobel(data$body, data$swear, data$posemo)$Indirect.Effect
+sobel(data$body, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$body, data$home, data$posemo)$Indirect.Effect
+sobel(data$body, data$money, data$posemo)$Indirect.Effect
+sobel(data$body, data$relig, data$posemo)$Indirect.Effect
+sobel(data$body, data$informal, data$posemo)$Indirect.Effect
+sobel(data$body, data$death, data$posemo)$Indirect.Effect
+sobel(data$body, data$assent, data$posemo)$Indirect.Effect
+sobel(data$body, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$bio, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$bio, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$bio, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$bio, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$bio, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$bio, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$bio, data$adj, data$posemo)$Indirect.Effect
+sobel(data$bio, data$affect, data$posemo)$Indirect.Effect
+sobel(data$bio, data$family, data$posemo)$Indirect.Effect
+sobel(data$bio, data$social, data$posemo)$Indirect.Effect
+sobel(data$bio, data$sad, data$posemo)$Indirect.Effect
+sobel(data$bio, data$anx, data$posemo)$Indirect.Effect
+sobel(data$bio, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$bio, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$bio, data$friend, data$posemo)$Indirect.Effect
+sobel(data$bio, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$bio, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$bio, data$health, data$posemo)$Indirect.Effect
+sobel(data$bio, data$body, data$posemo)$Indirect.Effect
+sobel(data$bio, data$hear, data$posemo)$Indirect.Effect
+sobel(data$bio, data$feel, data$posemo)$Indirect.Effect
+sobel(data$bio, data$drives, data$posemo)$Indirect.Effect
+sobel(data$bio, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$bio, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$bio, data$power, data$posemo)$Indirect.Effect
+sobel(data$bio, data$reward, data$posemo)$Indirect.Effect
+sobel(data$bio, data$risk, data$posemo)$Indirect.Effect
+sobel(data$bio, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$bio, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$bio, data$work, data$posemo)$Indirect.Effect
+sobel(data$bio, data$time, data$posemo)$Indirect.Effect
+sobel(data$bio, data$swear, data$posemo)$Indirect.Effect
+sobel(data$bio, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$bio, data$home, data$posemo)$Indirect.Effect
+sobel(data$bio, data$money, data$posemo)$Indirect.Effect
+sobel(data$bio, data$relig, data$posemo)$Indirect.Effect
+sobel(data$bio, data$informal, data$posemo)$Indirect.Effect
+sobel(data$bio, data$death, data$posemo)$Indirect.Effect
+sobel(data$bio, data$assent, data$posemo)$Indirect.Effect
+sobel(data$bio, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$hear, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$hear, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$hear, data$adj, data$posemo)$Indirect.Effect
+sobel(data$hear, data$affect, data$posemo)$Indirect.Effect
+sobel(data$hear, data$family, data$posemo)$Indirect.Effect
+sobel(data$hear, data$social, data$posemo)$Indirect.Effect
+sobel(data$hear, data$sad, data$posemo)$Indirect.Effect
+sobel(data$hear, data$anx, data$posemo)$Indirect.Effect
+sobel(data$hear, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$hear, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$hear, data$friend, data$posemo)$Indirect.Effect
+sobel(data$hear, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$hear, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$hear, data$health, data$posemo)$Indirect.Effect
+sobel(data$hear, data$body, data$posemo)$Indirect.Effect
+sobel(data$hear, data$bio, data$posemo)$Indirect.Effect
+sobel(data$hear, data$feel, data$posemo)$Indirect.Effect
+sobel(data$hear, data$drives, data$posemo)$Indirect.Effect
+sobel(data$hear, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$hear, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$hear, data$power, data$posemo)$Indirect.Effect
+sobel(data$hear, data$reward, data$posemo)$Indirect.Effect
+sobel(data$hear, data$risk, data$posemo)$Indirect.Effect
+sobel(data$hear, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$hear, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$hear, data$work, data$posemo)$Indirect.Effect
+sobel(data$hear, data$time, data$posemo)$Indirect.Effect
+sobel(data$hear, data$swear, data$posemo)$Indirect.Effect
+sobel(data$hear, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$hear, data$home, data$posemo)$Indirect.Effect
+sobel(data$hear, data$money, data$posemo)$Indirect.Effect
+sobel(data$hear, data$relig, data$posemo)$Indirect.Effect
+sobel(data$hear, data$informal, data$posemo)$Indirect.Effect
+sobel(data$hear, data$death, data$posemo)$Indirect.Effect
+sobel(data$hear, data$assent, data$posemo)$Indirect.Effect
+sobel(data$hear, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$hear, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$hear, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$hear, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$hear, data$adj, data$posemo)$Indirect.Effect
+sobel(data$hear, data$affect, data$posemo)$Indirect.Effect
+sobel(data$hear, data$family, data$posemo)$Indirect.Effect
+sobel(data$hear, data$social, data$posemo)$Indirect.Effect
+sobel(data$hear, data$sad, data$posemo)$Indirect.Effect
+sobel(data$hear, data$anx, data$posemo)$Indirect.Effect
+sobel(data$hear, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$hear, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$hear, data$friend, data$posemo)$Indirect.Effect
+sobel(data$hear, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$hear, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$hear, data$health, data$posemo)$Indirect.Effect
+sobel(data$hear, data$body, data$posemo)$Indirect.Effect
+sobel(data$hear, data$bio, data$posemo)$Indirect.Effect
+sobel(data$hear, data$feel, data$posemo)$Indirect.Effect
+sobel(data$hear, data$drives, data$posemo)$Indirect.Effect
+sobel(data$hear, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$hear, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$hear, data$power, data$posemo)$Indirect.Effect
+sobel(data$hear, data$reward, data$posemo)$Indirect.Effect
+sobel(data$hear, data$risk, data$posemo)$Indirect.Effect
+sobel(data$hear, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$hear, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$hear, data$work, data$posemo)$Indirect.Effect
+sobel(data$hear, data$time, data$posemo)$Indirect.Effect
+sobel(data$hear, data$swear, data$posemo)$Indirect.Effect
+sobel(data$hear, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$hear, data$home, data$posemo)$Indirect.Effect
+sobel(data$hear, data$money, data$posemo)$Indirect.Effect
+sobel(data$hear, data$relig, data$posemo)$Indirect.Effect
+sobel(data$hear, data$informal, data$posemo)$Indirect.Effect
+sobel(data$hear, data$death, data$posemo)$Indirect.Effect
+sobel(data$hear, data$assent, data$posemo)$Indirect.Effect
+sobel(data$hear, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$feel, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$feel, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$feel, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$feel, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$feel, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$feel, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$feel, data$adj, data$posemo)$Indirect.Effect
+sobel(data$feel, data$affect, data$posemo)$Indirect.Effect
+sobel(data$feel, data$family, data$posemo)$Indirect.Effect
+sobel(data$feel, data$social, data$posemo)$Indirect.Effect
+sobel(data$feel, data$sad, data$posemo)$Indirect.Effect
+sobel(data$feel, data$anx, data$posemo)$Indirect.Effect
+sobel(data$feel, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$feel, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$feel, data$friend, data$posemo)$Indirect.Effect
+sobel(data$feel, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$feel, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$feel, data$health, data$posemo)$Indirect.Effect
+sobel(data$feel, data$body, data$posemo)$Indirect.Effect
+sobel(data$feel, data$bio, data$posemo)$Indirect.Effect
+sobel(data$feel, data$hear, data$posemo)$Indirect.Effect
+sobel(data$feel, data$drives, data$posemo)$Indirect.Effect
+sobel(data$feel, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$feel, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$feel, data$power, data$posemo)$Indirect.Effect
+sobel(data$feel, data$reward, data$posemo)$Indirect.Effect
+sobel(data$feel, data$risk, data$posemo)$Indirect.Effect
+sobel(data$feel, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$feel, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$feel, data$work, data$posemo)$Indirect.Effect
+sobel(data$feel, data$time, data$posemo)$Indirect.Effect
+sobel(data$feel, data$swear, data$posemo)$Indirect.Effect
+sobel(data$feel, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$feel, data$home, data$posemo)$Indirect.Effect
+sobel(data$feel, data$money, data$posemo)$Indirect.Effect
+sobel(data$feel, data$relig, data$posemo)$Indirect.Effect
+sobel(data$feel, data$informal, data$posemo)$Indirect.Effect
+sobel(data$feel, data$death, data$posemo)$Indirect.Effect
+sobel(data$feel, data$assent, data$posemo)$Indirect.Effect
+sobel(data$feel, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$drives, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$drives, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$drives, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$drives, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$drives, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$drives, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$drives, data$adj, data$posemo)$Indirect.Effect
+sobel(data$drives, data$affect, data$posemo)$Indirect.Effect
+sobel(data$drives, data$family, data$posemo)$Indirect.Effect
+sobel(data$drives, data$social, data$posemo)$Indirect.Effect
+sobel(data$drives, data$sad, data$posemo)$Indirect.Effect
+sobel(data$drives, data$anx, data$posemo)$Indirect.Effect
+sobel(data$drives, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$drives, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$drives, data$friend, data$posemo)$Indirect.Effect
+sobel(data$drives, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$drives, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$drives, data$health, data$posemo)$Indirect.Effect
+sobel(data$drives, data$body, data$posemo)$Indirect.Effect
+sobel(data$drives, data$bio, data$posemo)$Indirect.Effect
+sobel(data$drives, data$hear, data$posemo)$Indirect.Effect
+sobel(data$drives, data$feel, data$posemo)$Indirect.Effect
+sobel(data$drives, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$drives, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$drives, data$power, data$posemo)$Indirect.Effect
+sobel(data$drives, data$reward, data$posemo)$Indirect.Effect
+sobel(data$drives, data$risk, data$posemo)$Indirect.Effect
+sobel(data$drives, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$drives, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$drives, data$work, data$posemo)$Indirect.Effect
+sobel(data$drives, data$time, data$posemo)$Indirect.Effect
+sobel(data$drives, data$swear, data$posemo)$Indirect.Effect
+sobel(data$drives, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$drives, data$home, data$posemo)$Indirect.Effect
+sobel(data$drives, data$money, data$posemo)$Indirect.Effect
+sobel(data$drives, data$relig, data$posemo)$Indirect.Effect
+sobel(data$drives, data$informal, data$posemo)$Indirect.Effect
+sobel(data$drives, data$death, data$posemo)$Indirect.Effect
+sobel(data$drives, data$assent, data$posemo)$Indirect.Effect
+sobel(data$drives, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$adj, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$affect, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$family, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$social, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$sad, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$anx, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$friend, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$health, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$body, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$bio, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$hear, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$feel, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$drives, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$power, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$reward, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$risk, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$work, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$time, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$swear, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$home, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$money, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$relig, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$informal, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$death, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$assent, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$adj, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$affect, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$family, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$social, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$sad, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$anx, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$friend, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$health, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$body, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$bio, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$hear, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$feel, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$drives, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$power, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$reward, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$risk, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$work, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$time, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$swear, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$home, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$money, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$relig, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$informal, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$death, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$assent, data$posemo)$Indirect.Effect
+sobel(data$achieve, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$power, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$power, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$power, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$power, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$power, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$power, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$power, data$adj, data$posemo)$Indirect.Effect
+sobel(data$power, data$affect, data$posemo)$Indirect.Effect
+sobel(data$power, data$family, data$posemo)$Indirect.Effect
+sobel(data$power, data$social, data$posemo)$Indirect.Effect
+sobel(data$power, data$sad, data$posemo)$Indirect.Effect
+sobel(data$power, data$anx, data$posemo)$Indirect.Effect
+sobel(data$power, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$power, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$power, data$friend, data$posemo)$Indirect.Effect
+sobel(data$power, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$power, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$power, data$health, data$posemo)$Indirect.Effect
+sobel(data$power, data$body, data$posemo)$Indirect.Effect
+sobel(data$power, data$bio, data$posemo)$Indirect.Effect
+sobel(data$power, data$hear, data$posemo)$Indirect.Effect
+sobel(data$power, data$feel, data$posemo)$Indirect.Effect
+sobel(data$power, data$drives, data$posemo)$Indirect.Effect
+sobel(data$power, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$power, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$power, data$reward, data$posemo)$Indirect.Effect
+sobel(data$power, data$risk, data$posemo)$Indirect.Effect
+sobel(data$power, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$power, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$power, data$work, data$posemo)$Indirect.Effect
+sobel(data$power, data$time, data$posemo)$Indirect.Effect
+sobel(data$power, data$swear, data$posemo)$Indirect.Effect
+sobel(data$power, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$power, data$home, data$posemo)$Indirect.Effect
+sobel(data$power, data$money, data$posemo)$Indirect.Effect
+sobel(data$power, data$relig, data$posemo)$Indirect.Effect
+sobel(data$power, data$informal, data$posemo)$Indirect.Effect
+sobel(data$power, data$death, data$posemo)$Indirect.Effect
+sobel(data$power, data$assent, data$posemo)$Indirect.Effect
+sobel(data$power, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$reward, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$reward, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$reward, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$reward, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$reward, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$reward, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$reward, data$adj, data$posemo)$Indirect.Effect
+sobel(data$reward, data$affect, data$posemo)$Indirect.Effect
+sobel(data$reward, data$family, data$posemo)$Indirect.Effect
+sobel(data$reward, data$social, data$posemo)$Indirect.Effect
+sobel(data$reward, data$sad, data$posemo)$Indirect.Effect
+sobel(data$reward, data$anx, data$posemo)$Indirect.Effect
+sobel(data$reward, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$reward, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$reward, data$friend, data$posemo)$Indirect.Effect
+sobel(data$reward, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$reward, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$reward, data$health, data$posemo)$Indirect.Effect
+sobel(data$reward, data$body, data$posemo)$Indirect.Effect
+sobel(data$reward, data$bio, data$posemo)$Indirect.Effect
+sobel(data$reward, data$hear, data$posemo)$Indirect.Effect
+sobel(data$reward, data$feel, data$posemo)$Indirect.Effect
+sobel(data$reward, data$drives, data$posemo)$Indirect.Effect
+sobel(data$reward, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$reward, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$reward, data$power, data$posemo)$Indirect.Effect
+sobel(data$reward, data$risk, data$posemo)$Indirect.Effect
+sobel(data$reward, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$reward, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$reward, data$work, data$posemo)$Indirect.Effect
+sobel(data$reward, data$time, data$posemo)$Indirect.Effect
+sobel(data$reward, data$swear, data$posemo)$Indirect.Effect
+sobel(data$reward, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$reward, data$home, data$posemo)$Indirect.Effect
+sobel(data$reward, data$money, data$posemo)$Indirect.Effect
+sobel(data$reward, data$relig, data$posemo)$Indirect.Effect
+sobel(data$reward, data$informal, data$posemo)$Indirect.Effect
+sobel(data$reward, data$death, data$posemo)$Indirect.Effect
+sobel(data$reward, data$assent, data$posemo)$Indirect.Effect
+sobel(data$reward, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$risk, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$risk, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$risk, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$risk, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$risk, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$risk, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$risk, data$adj, data$posemo)$Indirect.Effect
+sobel(data$risk, data$affect, data$posemo)$Indirect.Effect
+sobel(data$risk, data$family, data$posemo)$Indirect.Effect
+sobel(data$risk, data$social, data$posemo)$Indirect.Effect
+sobel(data$risk, data$sad, data$posemo)$Indirect.Effect
+sobel(data$risk, data$anx, data$posemo)$Indirect.Effect
+sobel(data$risk, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$risk, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$risk, data$friend, data$posemo)$Indirect.Effect
+sobel(data$risk, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$risk, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$risk, data$health, data$posemo)$Indirect.Effect
+sobel(data$risk, data$body, data$posemo)$Indirect.Effect
+sobel(data$risk, data$bio, data$posemo)$Indirect.Effect
+sobel(data$risk, data$hear, data$posemo)$Indirect.Effect
+sobel(data$risk, data$feel, data$posemo)$Indirect.Effect
+sobel(data$risk, data$drives, data$posemo)$Indirect.Effect
+sobel(data$risk, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$risk, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$risk, data$power, data$posemo)$Indirect.Effect
+sobel(data$risk, data$reward, data$posemo)$Indirect.Effect
+sobel(data$risk, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$risk, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$risk, data$work, data$posemo)$Indirect.Effect
+sobel(data$risk, data$time, data$posemo)$Indirect.Effect
+sobel(data$risk, data$swear, data$posemo)$Indirect.Effect
+sobel(data$risk, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$risk, data$home, data$posemo)$Indirect.Effect
+sobel(data$risk, data$money, data$posemo)$Indirect.Effect
+sobel(data$risk, data$relig, data$posemo)$Indirect.Effect
+sobel(data$risk, data$informal, data$posemo)$Indirect.Effect
+sobel(data$risk, data$death, data$posemo)$Indirect.Effect
+sobel(data$risk, data$assent, data$posemo)$Indirect.Effect
+sobel(data$risk, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$work, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$work, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$work, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$work, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$work, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$work, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$work, data$adj, data$posemo)$Indirect.Effect
+sobel(data$work, data$affect, data$posemo)$Indirect.Effect
+sobel(data$work, data$family, data$posemo)$Indirect.Effect
+sobel(data$work, data$social, data$posemo)$Indirect.Effect
+sobel(data$work, data$sad, data$posemo)$Indirect.Effect
+sobel(data$work, data$anx, data$posemo)$Indirect.Effect
+sobel(data$work, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$work, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$work, data$friend, data$posemo)$Indirect.Effect
+sobel(data$work, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$work, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$work, data$health, data$posemo)$Indirect.Effect
+sobel(data$work, data$body, data$posemo)$Indirect.Effect
+sobel(data$work, data$bio, data$posemo)$Indirect.Effect
+sobel(data$work, data$hear, data$posemo)$Indirect.Effect
+sobel(data$work, data$feel, data$posemo)$Indirect.Effect
+sobel(data$work, data$drives, data$posemo)$Indirect.Effect
+sobel(data$work, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$work, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$work, data$power, data$posemo)$Indirect.Effect
+sobel(data$work, data$reward, data$posemo)$Indirect.Effect
+sobel(data$work, data$risk, data$posemo)$Indirect.Effect
+sobel(data$work, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$work, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$work, data$time, data$posemo)$Indirect.Effect
+sobel(data$work, data$swear, data$posemo)$Indirect.Effect
+sobel(data$work, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$work, data$home, data$posemo)$Indirect.Effect
+sobel(data$work, data$money, data$posemo)$Indirect.Effect
+sobel(data$work, data$relig, data$posemo)$Indirect.Effect
+sobel(data$work, data$informal, data$posemo)$Indirect.Effect
+sobel(data$work, data$death, data$posemo)$Indirect.Effect
+sobel(data$work, data$assent, data$posemo)$Indirect.Effect
+sobel(data$work, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$time, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$time, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$time, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$time, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$time, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$time, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$time, data$adj, data$posemo)$Indirect.Effect
+sobel(data$time, data$affect, data$posemo)$Indirect.Effect
+sobel(data$time, data$family, data$posemo)$Indirect.Effect
+sobel(data$time, data$social, data$posemo)$Indirect.Effect
+sobel(data$time, data$sad, data$posemo)$Indirect.Effect
+sobel(data$time, data$anx, data$posemo)$Indirect.Effect
+sobel(data$time, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$time, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$time, data$friend, data$posemo)$Indirect.Effect
+sobel(data$time, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$time, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$time, data$health, data$posemo)$Indirect.Effect
+sobel(data$time, data$body, data$posemo)$Indirect.Effect
+sobel(data$time, data$bio, data$posemo)$Indirect.Effect
+sobel(data$time, data$hear, data$posemo)$Indirect.Effect
+sobel(data$time, data$feel, data$posemo)$Indirect.Effect
+sobel(data$time, data$drives, data$posemo)$Indirect.Effect
+sobel(data$time, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$time, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$time, data$power, data$posemo)$Indirect.Effect
+sobel(data$time, data$reward, data$posemo)$Indirect.Effect
+sobel(data$time, data$risk, data$posemo)$Indirect.Effect
+sobel(data$time, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$time, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$time, data$work, data$posemo)$Indirect.Effect
+sobel(data$time, data$swear, data$posemo)$Indirect.Effect
+sobel(data$time, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$time, data$home, data$posemo)$Indirect.Effect
+sobel(data$time, data$money, data$posemo)$Indirect.Effect
+sobel(data$time, data$relig, data$posemo)$Indirect.Effect
+sobel(data$time, data$informal, data$posemo)$Indirect.Effect
+sobel(data$time, data$death, data$posemo)$Indirect.Effect
+sobel(data$time, data$assent, data$posemo)$Indirect.Effect
+sobel(data$time, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$swear, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$swear, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$swear, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$swear, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$swear, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$swear, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$swear, data$adj, data$posemo)$Indirect.Effect
+sobel(data$swear, data$affect, data$posemo)$Indirect.Effect
+sobel(data$swear, data$family, data$posemo)$Indirect.Effect
+sobel(data$swear, data$social, data$posemo)$Indirect.Effect
+sobel(data$swear, data$sad, data$posemo)$Indirect.Effect
+sobel(data$swear, data$anx, data$posemo)$Indirect.Effect
+sobel(data$swear, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$swear, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$swear, data$friend, data$posemo)$Indirect.Effect
+sobel(data$swear, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$swear, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$swear, data$health, data$posemo)$Indirect.Effect
+sobel(data$swear, data$body, data$posemo)$Indirect.Effect
+sobel(data$swear, data$bio, data$posemo)$Indirect.Effect
+sobel(data$swear, data$hear, data$posemo)$Indirect.Effect
+sobel(data$swear, data$feel, data$posemo)$Indirect.Effect
+sobel(data$swear, data$drives, data$posemo)$Indirect.Effect
+sobel(data$swear, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$swear, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$swear, data$power, data$posemo)$Indirect.Effect
+sobel(data$swear, data$reward, data$posemo)$Indirect.Effect
+sobel(data$swear, data$risk, data$posemo)$Indirect.Effect
+sobel(data$swear, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$swear, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$swear, data$work, data$posemo)$Indirect.Effect
+sobel(data$swear, data$time, data$posemo)$Indirect.Effect
+sobel(data$swear, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$swear, data$home, data$posemo)$Indirect.Effect
+sobel(data$swear, data$money, data$posemo)$Indirect.Effect
+sobel(data$swear, data$relig, data$posemo)$Indirect.Effect
+sobel(data$swear, data$informal, data$posemo)$Indirect.Effect
+sobel(data$swear, data$death, data$posemo)$Indirect.Effect
+sobel(data$swear, data$assent, data$posemo)$Indirect.Effect
+sobel(data$swear, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$money, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$money, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$money, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$money, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$money, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$money, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$money, data$adj, data$posemo)$Indirect.Effect
+sobel(data$money, data$affect, data$posemo)$Indirect.Effect
+sobel(data$money, data$family, data$posemo)$Indirect.Effect
+sobel(data$money, data$social, data$posemo)$Indirect.Effect
+sobel(data$money, data$sad, data$posemo)$Indirect.Effect
+sobel(data$money, data$anx, data$posemo)$Indirect.Effect
+sobel(data$money, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$money, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$money, data$friend, data$posemo)$Indirect.Effect
+sobel(data$money, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$money, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$money, data$health, data$posemo)$Indirect.Effect
+sobel(data$money, data$body, data$posemo)$Indirect.Effect
+sobel(data$money, data$bio, data$posemo)$Indirect.Effect
+sobel(data$money, data$hear, data$posemo)$Indirect.Effect
+sobel(data$money, data$feel, data$posemo)$Indirect.Effect
+sobel(data$money, data$drives, data$posemo)$Indirect.Effect
+sobel(data$money, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$money, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$money, data$power, data$posemo)$Indirect.Effect
+sobel(data$money, data$reward, data$posemo)$Indirect.Effect
+sobel(data$money, data$risk, data$posemo)$Indirect.Effect
+sobel(data$money, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$money, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$money, data$work, data$posemo)$Indirect.Effect
+sobel(data$money, data$time, data$posemo)$Indirect.Effect
+sobel(data$money, data$swear, data$posemo)$Indirect.Effect
+sobel(data$money, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$money, data$home, data$posemo)$Indirect.Effect
+sobel(data$money, data$relig, data$posemo)$Indirect.Effect
+sobel(data$money, data$informal, data$posemo)$Indirect.Effect
+sobel(data$money, data$death, data$posemo)$Indirect.Effect
+sobel(data$money, data$assent, data$posemo)$Indirect.Effect
+sobel(data$money, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$relig, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$relig, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$relig, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$relig, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$relig, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$relig, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$relig, data$adj, data$posemo)$Indirect.Effect
+sobel(data$relig, data$affect, data$posemo)$Indirect.Effect
+sobel(data$relig, data$family, data$posemo)$Indirect.Effect
+sobel(data$relig, data$social, data$posemo)$Indirect.Effect
+sobel(data$relig, data$sad, data$posemo)$Indirect.Effect
+sobel(data$relig, data$anx, data$posemo)$Indirect.Effect
+sobel(data$relig, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$relig, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$relig, data$friend, data$posemo)$Indirect.Effect
+sobel(data$relig, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$relig, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$relig, data$health, data$posemo)$Indirect.Effect
+sobel(data$relig, data$body, data$posemo)$Indirect.Effect
+sobel(data$relig, data$bio, data$posemo)$Indirect.Effect
+sobel(data$relig, data$hear, data$posemo)$Indirect.Effect
+sobel(data$relig, data$feel, data$posemo)$Indirect.Effect
+sobel(data$relig, data$drives, data$posemo)$Indirect.Effect
+sobel(data$relig, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$relig, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$relig, data$power, data$posemo)$Indirect.Effect
+sobel(data$relig, data$reward, data$posemo)$Indirect.Effect
+sobel(data$relig, data$risk, data$posemo)$Indirect.Effect
+sobel(data$relig, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$relig, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$relig, data$work, data$posemo)$Indirect.Effect
+sobel(data$relig, data$time, data$posemo)$Indirect.Effect
+sobel(data$relig, data$swear, data$posemo)$Indirect.Effect
+sobel(data$relig, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$relig, data$home, data$posemo)$Indirect.Effect
+sobel(data$relig, data$money, data$posemo)$Indirect.Effect
+sobel(data$relig, data$informal, data$posemo)$Indirect.Effect
+sobel(data$relig, data$death, data$posemo)$Indirect.Effect
+sobel(data$relig, data$assent, data$posemo)$Indirect.Effect
+sobel(data$relig, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$informal, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$informal, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$informal, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$informal, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$informal, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$informal, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$informal, data$adj, data$posemo)$Indirect.Effect
+sobel(data$informal, data$affect, data$posemo)$Indirect.Effect
+sobel(data$informal, data$family, data$posemo)$Indirect.Effect
+sobel(data$informal, data$social, data$posemo)$Indirect.Effect
+sobel(data$informal, data$sad, data$posemo)$Indirect.Effect
+sobel(data$informal, data$anx, data$posemo)$Indirect.Effect
+sobel(data$informal, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$informal, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$informal, data$friend, data$posemo)$Indirect.Effect
+sobel(data$informal, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$informal, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$informal, data$health, data$posemo)$Indirect.Effect
+sobel(data$informal, data$body, data$posemo)$Indirect.Effect
+sobel(data$informal, data$bio, data$posemo)$Indirect.Effect
+sobel(data$informal, data$hear, data$posemo)$Indirect.Effect
+sobel(data$informal, data$feel, data$posemo)$Indirect.Effect
+sobel(data$informal, data$drives, data$posemo)$Indirect.Effect
+sobel(data$informal, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$informal, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$informal, data$power, data$posemo)$Indirect.Effect
+sobel(data$informal, data$reward, data$posemo)$Indirect.Effect
+sobel(data$informal, data$risk, data$posemo)$Indirect.Effect
+sobel(data$informal, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$informal, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$informal, data$work, data$posemo)$Indirect.Effect
+sobel(data$informal, data$time, data$posemo)$Indirect.Effect
+sobel(data$informal, data$swear, data$posemo)$Indirect.Effect
+sobel(data$informal, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$informal, data$home, data$posemo)$Indirect.Effect
+sobel(data$informal, data$money, data$posemo)$Indirect.Effect
+sobel(data$informal, data$relig, data$posemo)$Indirect.Effect
+sobel(data$informal, data$death, data$posemo)$Indirect.Effect
+sobel(data$informal, data$assent, data$posemo)$Indirect.Effect
+sobel(data$informal, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$death, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$death, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$death, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$death, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$death, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$death, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$death, data$adj, data$posemo)$Indirect.Effect
+sobel(data$death, data$affect, data$posemo)$Indirect.Effect
+sobel(data$death, data$family, data$posemo)$Indirect.Effect
+sobel(data$death, data$social, data$posemo)$Indirect.Effect
+sobel(data$death, data$sad, data$posemo)$Indirect.Effect
+sobel(data$death, data$anx, data$posemo)$Indirect.Effect
+sobel(data$death, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$death, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$death, data$friend, data$posemo)$Indirect.Effect
+sobel(data$death, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$death, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$death, data$health, data$posemo)$Indirect.Effect
+sobel(data$death, data$body, data$posemo)$Indirect.Effect
+sobel(data$death, data$bio, data$posemo)$Indirect.Effect
+sobel(data$death, data$hear, data$posemo)$Indirect.Effect
+sobel(data$death, data$feel, data$posemo)$Indirect.Effect
+sobel(data$death, data$drives, data$posemo)$Indirect.Effect
+sobel(data$death, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$death, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$death, data$power, data$posemo)$Indirect.Effect
+sobel(data$death, data$reward, data$posemo)$Indirect.Effect
+sobel(data$death, data$risk, data$posemo)$Indirect.Effect
+sobel(data$death, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$death, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$death, data$work, data$posemo)$Indirect.Effect
+sobel(data$death, data$time, data$posemo)$Indirect.Effect
+sobel(data$death, data$swear, data$posemo)$Indirect.Effect
+sobel(data$death, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$death, data$home, data$posemo)$Indirect.Effect
+sobel(data$death, data$money, data$posemo)$Indirect.Effect
+sobel(data$death, data$relig, data$posemo)$Indirect.Effect
+sobel(data$death, data$informal, data$posemo)$Indirect.Effect
+sobel(data$death, data$assent, data$posemo)$Indirect.Effect
+sobel(data$death, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$assent, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$assent, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$assent, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$assent, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$assent, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$assent, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$assent, data$adj, data$posemo)$Indirect.Effect
+sobel(data$assent, data$affect, data$posemo)$Indirect.Effect
+sobel(data$assent, data$family, data$posemo)$Indirect.Effect
+sobel(data$assent, data$social, data$posemo)$Indirect.Effect
+sobel(data$assent, data$sad, data$posemo)$Indirect.Effect
+sobel(data$assent, data$anx, data$posemo)$Indirect.Effect
+sobel(data$assent, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$assent, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$assent, data$friend, data$posemo)$Indirect.Effect
+sobel(data$assent, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$assent, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$assent, data$health, data$posemo)$Indirect.Effect
+sobel(data$assent, data$body, data$posemo)$Indirect.Effect
+sobel(data$assent, data$bio, data$posemo)$Indirect.Effect
+sobel(data$assent, data$hear, data$posemo)$Indirect.Effect
+sobel(data$assent, data$feel, data$posemo)$Indirect.Effect
+sobel(data$assent, data$drives, data$posemo)$Indirect.Effect
+sobel(data$assent, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$assent, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$assent, data$power, data$posemo)$Indirect.Effect
+sobel(data$assent, data$reward, data$posemo)$Indirect.Effect
+sobel(data$assent, data$risk, data$posemo)$Indirect.Effect
+sobel(data$assent, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$assent, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$assent, data$work, data$posemo)$Indirect.Effect
+sobel(data$assent, data$time, data$posemo)$Indirect.Effect
+sobel(data$assent, data$swear, data$posemo)$Indirect.Effect
+sobel(data$assent, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$assent, data$home, data$posemo)$Indirect.Effect
+sobel(data$assent, data$money, data$posemo)$Indirect.Effect
+sobel(data$assent, data$relig, data$posemo)$Indirect.Effect
+sobel(data$assent, data$informal, data$posemo)$Indirect.Effect
+sobel(data$assent, data$death, data$posemo)$Indirect.Effect
+sobel(data$assent, data$nonflu, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$Analytic, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$Clout, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$Authentic, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$Tone, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$WPS, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$adverb, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$adj, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$affect, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$family, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$social, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$sad, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$anx, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$negemo, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$posemo, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$friend, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$discrep, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$sexual, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$health, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$body, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$bio, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$hear, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$feel, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$drives, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$affiliation, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$achieve, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$power, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$reward, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$risk, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$focuspast, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$focuspresent, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$work, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$time, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$swear, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$leisure, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$home, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$money, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$relig, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$informal, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$death, data$posemo)$Indirect.Effect
+sobel(data$nonflu, data$assent, data$posemo)$Indirect.Effect
+sink()
+
+
+data$angerXaffect<- data$anger*data$affect
+data$sadXaffect<- data$sad*data$affect
+names(data)
+data$informalXswear=data$informal*data$swear
+
+sobel(data$informal, data$anger,  data$focuspast)$Indirect.Effect
+sobel(data$negemo, data$swear, data$posemo)$Indirect.Effect
+sobel(data$affiliation, data$social, data$focuspresent)$Indirect.Effect
+sobel(data$Tone, data$reward, data$focuspresent)$Indirect.Effect
+smod
+
+
+
+sobelMod <- sobel(data$affiliation, data$health, data$affect)
+
+pvalue2sided <- 2*pnorm(-abs(smod$z.value))
+pvalue2sided
+
+
+
+smod1<-sobel(data$reward, data$Tone, data$posemo)
+smod1
+pvalue2sided <- 2*pnorm(-abs(smod1$z.value))
+pvalue2sided
+
+smod2<-sobel(data$swear, data$negemo, data$posemo)
+smod2
+pvalue2sided <- 2*pnorm(-abs(smod2$z.value))
+pvalue2sided
+
+
+
+
+
+
+
+
+sobel(data$focuspast, data$focuspresent, data$posemo)$Indirect.Effect
+
+
+sobel(data$swear, data$anger, data$negemo)$Indirect.Effect
+
+
+ng<- lm(negemo~ informal+swear+Tone+social*affiliation, data = data)
+summary(ng)
+
+
+
+#https://stats.stackexchange.com/questions/14005/linear-regression-with-factors-in-r/14029
+
+ln<- lm(posemo ~ affiliation*social*focuspresent+informal+negemo*swear*anger+focuspast+Tone*reward, data = data)
+
+#ln<- lm(posemo~social+negemo+friend+focuspast+focuspresent+affiliation+ToneXreward+sadXaffect, data = data)
+#affiliation * social + focuspast + focuspresent + 
+#  friend + informal + negemo * swear + Tone * reward, data = data
+summary(ln)
+
+
+#lm(formula = posemo ~ affiliation * social + focuspresent + focuspast + 
+#friend + informal + negemo * swear + Tone * reward, data = data)
+
+f1_data<- subset(data,select=c(affiliation,social, focuspresent ,focuspast  , informal , negemo , swear , Tone , reward))
+vif(l)
+
+
+
+l<-lm(formula = posemo ~ affiliation * social + focuspresent + focuspast  + informal + negemo * swear + Tone * reward, data = data)
+
+summary(l)
+plot(l)
+
+#predtrain= predict(l, data, interval = "prediction")
+#regr.eval(predtrain,data$posemo)
+
+f_data<- cbind(main$Date_of_post,data) 
+write.csv(f_data,"f_data.csv")
+
+
+
+# ln<- lm(posemo ~ affiliation*social*focuspresent+ focuspast*reward + friend+informal + negemo * swear + reward, data = data)
+
+
+
+
+sobel(data$anger, data$focuspast, data$posemo)$Indirect.Effect
+
+
+
+nc<- lm(posemo~ anger*swear*negemo, data = data)
+summary(nc)
